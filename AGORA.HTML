@@ -1,0 +1,1209 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGGFREE - Prototipo Interactivo de Calma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#1B365D',
+                        mint: '#5EE3A6',
+                        mintDark: '#1C4E33',
+                        salmon: '#E08974',
+                        crema: '#FCFBFA',
+                        slateDark: '#1E293B'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .phone-scrollbar::-webkit-scrollbar { width: 4px; }
+        .phone-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); background-color: #E08974; }
+            40% { transform: scale(1.22); background-color: #8FA89B; }
+            70% { transform: scale(1.22); background-color: #8FA89B; }
+        }
+        .breathing-active { animation: breathe 12s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes slideUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes softPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(94, 227, 166, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(94, 227, 166, 0); }
+        }
+        .animate-soft-pulse { animation: softPulse 2s infinite; }
+        /* Barras del historial de ánimo */
+        @keyframes growBar {
+            from { width: 0%; }
+        }
+        .animate-grow-bar { animation: growBar 0.8s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans flex items-center justify-center py-8 px-4 selection:bg-mint selection:text-navy">
+
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        <!-- Panel Izquierdo -->
+        <div class="lg:col-span-5 flex flex-col justify-between bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="bg-mint/20 text-mintDark px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">AGGFREE IA Live + Nube</span>
+                    <div class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></div>
+                </div>
+                <h1 class="text-3xl font-bold font-poppins text-navy mb-4">Prototipo de Calma</h1>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    ¡Tu diseño de Figma cobró vida y ahora se guarda automáticamente! Escribe tu logro en el chat de la pestaña <strong class="text-navy">IA Asistente</strong> o marca tus días de constancia. Tu progreso se guardará de forma instantánea.
+                </p>
+
+                <div class="space-y-3 mb-6">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Toca una sugerencia para enviarla al chat:</p>
+                    <button onclick="fillChat('Hola! Hoy me armé de valor y logré caminar hasta la esquina de la cuadra.')" class="w-full text-left bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint p-3 rounded-xl transition duration-200 flex items-start gap-3 group text-sm">
+                        <span class="text-lg">🚶</span>
+                        <div>
+                            <p class="font-medium text-slate-700 group-hover:text-navy">"Hoy logré caminar hasta la esquina..."</p>
+                            <p class="text-xs text-slate-500">Registrar reto de Nivel 2</p>
+                        </div>
+                    </button>
+                    <button onclick="fillChat('Pude abrir la puerta de mi casa y quedarme mirando hacia afuera por 2 minutos enteros.')" class="w-full text-left bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint p-3 rounded-xl transition duration-200 flex items-start gap-3 group text-sm">
+                        <span class="text-lg">🏠</span>
+                        <div>
+                            <p class="font-medium text-slate-700 group-hover:text-navy">"Pude abrir la puerta de mi casa..."</p>
+                            <p class="text-xs text-slate-500">Registrar reto de Nivel 1</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div class="flex justify-between items-center text-xs text-slate-500">
+                    <span>Estado del Archivo:</span>
+                    <span class="font-semibold text-amber-600" id="cloud-status"><i class="fa-solid fa-spinner animate-spin mr-1"></i> Conectando...</span>
+                </div>
+                <div class="mt-2 flex justify-between items-center text-xs text-slate-500">
+                    <span>Estado del Trofeo:</span>
+                    <span class="font-bold text-navy" id="status-trophy-text">Bloqueado ❌</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Centro: Celular -->
+        <div class="lg:col-span-7 flex justify-center">
+            
+            <div class="relative w-[380px] h-[780px] bg-slate-900 rounded-[50px] p-3 shadow-2xl border-4 border-slate-800 ring-1 ring-white/10 flex flex-col overflow-hidden">
+                
+                <div class="absolute top-4 left-1/2 transform -translate-x-1/2 w-28 h-6 bg-black rounded-full z-50 flex items-center justify-between px-4">
+                    <div class="w-2.5 h-2.5 bg-zinc-800 rounded-full"></div>
+                    <div class="w-8 h-1 bg-zinc-800 rounded-full"></div>
+                </div>
+
+                <div id="phone-screen" class="w-full h-full bg-crema rounded-[38px] overflow-hidden flex flex-col justify-between relative pt-8">
+                    
+                    <div class="flex-grow overflow-y-auto phone-scrollbar px-5 py-2 flex flex-col">
+                        
+                        <!-- SECCIÓN 1: INICIO (con historial de ánimos) -->
+                        <div id="tab-content-inicio" class="space-y-5 flex flex-col justify-between my-auto">
+                            <div class="text-left">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h2 class="text-3xl font-bold font-poppins text-navy tracking-tight">Hola </h2>
+                                    <input type="text" id="username-input" oninput="handleUsernameChange()" value="Usuari@" class="text-3xl font-bold font-poppins text-navy bg-transparent border-b-2 border-dashed border-slate-300 focus:border-mint focus:outline-none w-[170px]" title="Haz clic para cambiar tu nombre">
+                                    <span class="text-xs text-slate-400">✏️</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400">Toca el nombre de arriba para escribir el tuyo.</p>
+                            </div>
+
+                            <!-- Tracker de Ánimo -->
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">¿Cómo te sientes hoy?</p>
+                                <div class="flex justify-between items-center gap-2">
+                                    <button onclick="selectMood('feliz')" id="mood-btn-feliz" class="w-12 h-12 rounded-full bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint flex items-center justify-center text-2xl transition duration-200">😊</button>
+                                    <button onclick="selectMood('neutral')" id="mood-btn-neutral" class="w-12 h-12 rounded-full bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint flex items-center justify-center text-2xl transition duration-200">😐</button>
+                                    <button onclick="selectMood('ansioso')" id="mood-btn-ansioso" class="w-12 h-12 rounded-full bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint flex items-center justify-center text-2xl transition duration-200">😰</button>
+                                    <button onclick="selectMood('crisis')" id="mood-btn-crisis" class="w-12 h-12 rounded-full bg-slate-50 hover:bg-salmon/10 border border-slate-200 hover:border-salmon flex items-center justify-center text-2xl transition duration-200">🌀</button>
+                                </div>
+                                <p class="text-[10px] text-slate-400 italic text-center">Toca un emoticón y te guiaremos al siguiente paso ideal para ti.</p>
+                            </div>
+
+                            <!-- NUEVO: Historial semanal de ánimos -->
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mi semana emocional</p>
+                                    <button onclick="resetMoodHistory()" class="text-[10px] text-slate-400 hover:text-salmon transition" title="Reiniciar historial">
+                                        <i class="fa-solid fa-rotate-left"></i> Reiniciar
+                                    </button>
+                                </div>
+                                
+                                <div id="mood-history-empty" class="text-center py-3">
+                                    <p class="text-xs text-slate-400 italic">Aún no has registrado ningún ánimo esta semana. ¡Empieza tocando un emoticón arriba!</p>
+                                </div>
+
+                                <div id="mood-history-content" class="hidden space-y-2">
+                                    <!-- Barra Feliz -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg w-6 text-center">😊</span>
+                                        <div class="flex-grow bg-slate-100 h-5 rounded-full overflow-hidden relative">
+                                            <div id="mood-bar-feliz" class="bg-mint h-full rounded-full animate-grow-bar flex items-center justify-end pr-2 transition-all" style="width: 0%;">
+                                                <span id="mood-count-feliz" class="text-[10px] font-bold text-mintDark">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Barra Neutral -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg w-6 text-center">😐</span>
+                                        <div class="flex-grow bg-slate-100 h-5 rounded-full overflow-hidden relative">
+                                            <div id="mood-bar-neutral" class="bg-sky-400 h-full rounded-full animate-grow-bar flex items-center justify-end pr-2 transition-all" style="width: 0%;">
+                                                <span id="mood-count-neutral" class="text-[10px] font-bold text-white">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Barra Ansioso -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg w-6 text-center">😰</span>
+                                        <div class="flex-grow bg-slate-100 h-5 rounded-full overflow-hidden relative">
+                                            <div id="mood-bar-ansioso" class="bg-amber-400 h-full rounded-full animate-grow-bar flex items-center justify-end pr-2 transition-all" style="width: 0%;">
+                                                <span id="mood-count-ansioso" class="text-[10px] font-bold text-white">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Barra Crisis -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg w-6 text-center">🌀</span>
+                                        <div class="flex-grow bg-slate-100 h-5 rounded-full overflow-hidden relative">
+                                            <div id="mood-bar-crisis" class="bg-salmon h-full rounded-full animate-grow-bar flex items-center justify-end pr-2 transition-all" style="width: 0%;">
+                                                <span id="mood-count-crisis" class="text-[10px] font-bold text-white">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p id="mood-history-summary" class="text-[11px] text-slate-500 italic text-center pt-1 border-t border-dashed border-slate-100 mt-2"></p>
+                                </div>
+                            </div>
+
+                            <!-- Frase de Calma Dinámica -->
+                            <div class="p-4 bg-white/50 rounded-2xl border border-dashed border-slate-200 min-h-[100px] flex items-center justify-center">
+                                <p id="dynamic-mood-phrase" class="text-sm font-semibold text-slate-600 leading-relaxed font-sans italic text-center">
+                                    "Estás a salvo aquí en tu app. Si lo necesitas, tu botón SOS está listo para ayudarte"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 2: APRENDE -->
+                        <div id="tab-content-aprende" class="hidden space-y-4">
+                            <div class="text-left">
+                                <h3 class="text-xl font-bold text-navy font-poppins mb-1">Aprende y Sana</h3>
+                                <p class="text-xs text-slate-500">La información es tu mejor aliada contra la ansiedad.</p>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm border-l-4 border-mint text-center">
+                                <p class="text-lg font-bold text-slate-700 italic leading-relaxed">"solo es miedo."</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div onclick="openVideo()" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-mint hover:bg-mint/5 transition cursor-pointer flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-play"></i></div>
+                                    <div class="flex-grow">
+                                        <h4 class="font-bold text-sm text-navy">¿Qué es la agorafobia? 📺</h4>
+                                        <p class="text-xs text-slate-500">Video explicativo de apoyo psicoeducativo.</p>
+                                    </div>
+                                    <span class="text-slate-400 text-xs"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                                </div>
+
+                                <div onclick="toggleMyths()" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-mint hover:bg-mint/5 transition cursor-pointer flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                                    <div class="flex-grow">
+                                        <h4 class="font-bold text-sm text-navy">Rompiendo Mitos 🛡️</h4>
+                                        <p class="text-xs text-slate-500">Diferencia el miedo de la realidad física.</p>
+                                    </div>
+                                    <span class="text-slate-400 text-xs" id="myth-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                </div>
+
+                                <div id="myths-panel" class="hidden bg-white/50 border border-slate-200 p-3.5 rounded-2xl space-y-2.5 text-xs animate-pop">
+                                    <div class="p-2.5 bg-white rounded-xl border border-slate-100">
+                                        <p class="font-bold text-red-500">❌ Mito: "Los espacios abiertos son peligrosos."</p>
+                                        <p class="text-slate-600 mt-1">✅ <strong>Realidad:</strong> El miedo es solo una emoción interna de alerta; el lugar en sí es neutro y seguro.</p>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-xl border border-slate-100">
+                                        <p class="font-bold text-red-500">❌ Mito: "Me voy a desmayar o perder el control."</p>
+                                        <p class="text-slate-600 mt-1">✅ <strong>Realidad:</strong> Al asustarte tu presión sube, haciendo que desmayarse sea físicamente casi imposible.</p>
+                                    </div>
+                                </div>
+
+                                <div onclick="openGuide()" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-mint hover:bg-mint/5 transition cursor-pointer flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-file-pdf"></i></div>
+                                    <div class="flex-grow">
+                                        <h4 class="font-bold text-sm text-navy">Guía de Afrontamiento 📚</h4>
+                                        <p class="text-xs text-slate-500">Recurso clínico oficial de salud mental (PDF).</p>
+                                    </div>
+                                    <span class="text-slate-400 text-xs"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 3: RETOS (con botón de exportar) -->
+                        <div id="tab-content-retos" class="hidden space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-bold text-navy font-poppins mb-1">Mis Retos</h3>
+                                    <p class="text-xs text-slate-500">Logra tus metas a tu propio ritmo.</p>
+                                </div>
+                                <!-- NUEVO: Botón de compartir progreso -->
+                                <button onclick="openExportModal()" class="bg-navy hover:bg-navy/90 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full flex items-center gap-1 transition shadow-sm">
+                                    <i class="fa-solid fa-share-nodes"></i> Compartir
+                                </button>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div id="challenge-0" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <span class="text-xs font-bold text-mintDark bg-mint/20 px-2.5 py-0.5 rounded-full">Nivel 1: Hogar 🏠</span>
+                                            <h4 class="font-bold text-sm text-navy mt-1">Mirar por la ventana</h4>
+                                        </div>
+                                        <span id="challenge-status-0" class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">Pendiente</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500">Abrir la puerta principal o ventana y observar el exterior por 2 minutos.</p>
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div id="challenge-bar-0" class="bg-mint h-full w-0 transition-all duration-500"></div>
+                                    </div>
+                                </div>
+
+                                <div id="challenge-1" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-full">Nivel 2: Cercanía 🚶</span>
+                                            <h4 class="font-bold text-sm text-navy mt-1">Caminar a la esquina</h4>
+                                        </div>
+                                        <span id="challenge-status-1" class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">Pendiente</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500">Caminar hasta el final de la calle o esquina más cercana y regresar.</p>
+                                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                        <div id="challenge-bar-1" class="bg-mint h-full w-0 transition-all duration-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mi constancia semanal</h4>
+                                    <span class="text-xs font-bold text-mintDark bg-mint/20 px-2.5 py-1 rounded-full" id="weekly-days-count">0 / 7 Días</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center gap-1.5">
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">L</span>
+                                        <div id="day-pill-0" onclick="toggleDayDirectly(0)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-0" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">M</span>
+                                        <div id="day-pill-1" onclick="toggleDayDirectly(1)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-1" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">M</span>
+                                        <div id="day-pill-2" onclick="toggleDayDirectly(2)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-2" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">J</span>
+                                        <div id="day-pill-3" onclick="toggleDayDirectly(3)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-3" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">V</span>
+                                        <div id="day-pill-4" onclick="toggleDayDirectly(4)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-4" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">S</span>
+                                        <div id="day-pill-5" onclick="toggleDayDirectly(5)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-5" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-center gap-2 flex-1">
+                                        <span class="text-xs font-bold text-slate-400">D</span>
+                                        <div id="day-pill-6" onclick="toggleDayDirectly(6)" class="w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100">
+                                            <i id="day-ray-6" class="fa-solid fa-bolt text-slate-400 text-[10px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex justify-around items-center">
+                                <div class="text-center">
+                                    <span class="text-xs text-slate-400 block mb-1">Tu Logro</span>
+                                    <div id="figma-trophy" class="text-4xl grayscale transition-all duration-500 transform scale-100">🏆</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-xs text-slate-400 block mb-1">Estado</span>
+                                    <div id="figma-status-icon" class="text-4xl transition-all duration-500">❌</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 4: ESPECIALISTAS -->
+                        <div id="tab-content-especialistas" class="hidden space-y-4">
+                            <div class="text-left">
+                                <h3 class="text-lg font-bold text-navy font-poppins mb-1">Especialistas</h3>
+                                <p class="text-xs text-slate-500">Contacta a terapeutas y psiquiatras de confianza.</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                                <div>
+                                    <h4 class="font-bold text-sm text-navy">Dra. Sofía Alarcón 🩺</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Psicóloga clínica y especialista en Terapia de Exposición.</p>
+                                </div>
+                                <button onclick="window.open('https://wa.me/', '_blank')" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition duration-200 shadow-sm">
+                                    <i class="fa-solid fa-message"></i> Enviar Mensaje
+                                </button>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+                                <div>
+                                    <h4 class="font-bold text-sm text-navy">Dr. Carlos Mendoza 🧠</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Psiquiatra especialista en trastornos de pánico y ansiedad.</p>
+                                </div>
+                                <button onclick="window.open('tel:', '_blank')" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-xs py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition duration-200 shadow-sm">
+                                    <i class="fa-solid fa-phone"></i> Llama al Consultorio
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN 5: CALMAR MENTE / SOS -->
+                        <div id="tab-content-sos" class="hidden flex flex-col items-center justify-center my-auto space-y-8">
+                            <div class="text-center">
+                                <h3 class="text-xl font-bold text-navy font-poppins">Calmar la Mente</h3>
+                                <p class="text-xs text-slate-500 mt-1">Presiona el círculo para iniciar una respiración profunda.</p>
+                            </div>
+
+                            <div class="relative flex items-center justify-center">
+                                <button id="breathe-circle" onclick="startBreathing()" class="w-[180px] h-[180px] rounded-full bg-salmon text-white font-bold text-center flex flex-col items-center justify-center shadow-lg transition-all duration-500 hover:scale-105 focus:outline-none relative z-10">
+                                    <span id="breathe-action" class="text-lg tracking-wider font-poppins uppercase">Calmarme</span>
+                                    <span id="breathe-timer" class="text-xs font-light mt-1">Presionar</span>
+                                </button>
+                                <div id="breathe-wave" class="absolute inset-0 rounded-full bg-salmon/30 scale-100 transition-all duration-[4000ms] ease-in-out"></div>
+                            </div>
+
+                            <p id="breathe-instruction" class="text-sm font-semibold text-slate-600 text-center max-w-[240px]">
+                                "Inhala y exhala despacio. Todo está bien."
+                            </p>
+                        </div>
+
+                        <!-- SECCIÓN 6: ASISTENTE IA -->
+                        <div id="tab-content-asistente" class="hidden flex flex-col h-full space-y-3 justify-between">
+                            <div class="shrink-0">
+                                <h3 class="text-lg font-bold text-navy font-poppins">Guía Empática IA</h3>
+                                <p class="text-[11px] text-slate-500">Cuéntale tus retos de hoy para marcar tu constancia.</p>
+                            </div>
+
+                            <div id="chat-messages" class="flex-grow bg-white border border-slate-100 rounded-2xl p-3 h-[230px] overflow-y-auto space-y-3 phone-scrollbar">
+                                <div class="flex items-start gap-2 max-w-[85%]">
+                                    <div class="w-7 h-7 rounded-full bg-mint/20 text-mintDark flex items-center justify-center text-xs shrink-0">🌿</div>
+                                    <div id="welcome-message-chat" class="bg-slate-100 p-2.5 rounded-2xl rounded-tl-none text-xs text-slate-700 leading-relaxed shadow-sm">
+                                        ¡Hola Usuari@! Estoy aquí para escucharte y registrar tus progresos de hoy en el calendario. Cuéntame, ¿qué reto lograste superar? 😊
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="chat-loading" class="hidden flex items-start gap-2 max-w-[85%] self-start animate-pulse">
+                                <div class="w-7 h-7 rounded-full bg-mint/20 text-mintDark flex items-center justify-center text-xs">🌿</div>
+                                <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none text-xs text-slate-500">
+                                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Analizando tu logro...
+                                </div>
+                            </div>
+
+                            <form id="chat-form" onsubmit="sendMessage(event)" class="flex gap-2 shrink-0">
+                                <input id="chat-input" type="text" placeholder="Hoy logré mi reto..." class="flex-grow bg-white border border-slate-200 focus:border-mint rounded-xl px-3 py-2 text-xs focus:outline-none transition" required>
+                                <button type="submit" class="bg-mint hover:bg-mint/80 text-navy font-bold w-10 h-10 rounded-xl flex items-center justify-center transition shrink-0 shadow-sm">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <!-- Barra de navegación -->
+                    <div class="bg-white border-t border-slate-100 py-3 px-2.5 flex justify-between items-center select-none shrink-0 relative z-10 shadow-lg rounded-b-[38px]">
+                        <button onclick="switchTab('inicio')" id="nav-inicio" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1">
+                            <i class="fa-solid fa-house text-sm transition-transform duration-200 hover:scale-110"></i>
+                            <span class="text-[8px] font-semibold">Inicio</span>
+                        </button>
+                        <button onclick="switchTab('aprende')" id="nav-aprende" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1">
+                            <i class="fa-solid fa-book-open text-sm transition-transform duration-200 hover:scale-110"></i>
+                            <span class="text-[8px] font-semibold">Aprende</span>
+                        </button>
+                        <button onclick="switchTab('retos')" id="nav-retos" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1">
+                            <i class="fa-solid fa-trophy text-sm transition-transform duration-200 hover:scale-110"></i>
+                            <span class="text-[8px] font-semibold">Retos</span>
+                        </button>
+                        <button onclick="switchTab('especialistas')" id="nav-especialistas" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1">
+                            <i class="fa-solid fa-user-doctor text-sm transition-transform duration-200 hover:scale-110"></i>
+                            <span class="text-[8px] font-semibold">Doctores</span>
+                        </button>
+                        <button onclick="switchTab('sos')" id="nav-sos" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1">
+                            <i class="fa-solid fa-heart-pulse text-sm transition-transform duration-200 hover:scale-110 text-salmon"></i>
+                            <span class="text-[8px] font-semibold text-salmon">Calma</span>
+                        </button>
+                        <button onclick="switchTab('asistente')" id="nav-asistente" class="flex flex-col items-center text-slate-400 hover:text-navy transition font-poppins gap-1 flex-1 relative">
+                            <span class="absolute top-0 right-2 w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                            <i class="fa-solid fa-circle-nodes text-sm transition-transform duration-200 hover:scale-110"></i>
+                            <span class="text-[8px] font-semibold">Asistente</span>
+                        </button>
+                    </div>
+
+                    <!-- Modal de ánimo -->
+                    <div id="mood-modal" class="hidden absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex items-end justify-center rounded-[38px]">
+                        <div id="mood-modal-content" class="w-full bg-crema rounded-t-[32px] p-5 pb-7 shadow-2xl animate-slide-up max-h-[85%] overflow-y-auto phone-scrollbar relative">
+                            <button onclick="closeMoodModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </button>
+                            <div class="text-center mb-4 pr-6">
+                                <div id="mood-modal-emoji" class="text-5xl mb-2 animate-pop">😊</div>
+                                <h3 id="mood-modal-title" class="text-lg font-bold text-navy font-poppins">¡Qué bueno verte así!</h3>
+                                <p id="mood-modal-subtitle" class="text-xs text-slate-500 mt-1 leading-relaxed">Aprovechemos este momento.</p>
+                            </div>
+                            <div id="mood-modal-actions" class="space-y-2.5"></div>
+                            <button onclick="closeMoodModal()" class="w-full mt-4 text-xs text-slate-400 hover:text-slate-600 py-2 transition">
+                                Ahora no, solo quería registrarme
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- NUEVO: Modal de Exportar Progreso -->
+                    <div id="export-modal" class="hidden absolute inset-0 z-40 bg-black/50 backdrop-blur-sm flex items-end justify-center rounded-[38px]">
+                        <div class="w-full bg-crema rounded-t-[32px] p-5 pb-7 shadow-2xl animate-slide-up max-h-[90%] overflow-y-auto phone-scrollbar relative">
+                            <button onclick="closeExportModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition">
+                                <i class="fa-solid fa-xmark text-sm"></i>
+                            </button>
+                            
+                            <div class="text-center mb-4 pr-6">
+                                <div class="text-5xl mb-2 animate-pop">📤</div>
+                                <h3 class="text-lg font-bold text-navy font-poppins">Compartir mi avance</h3>
+                                <p class="text-xs text-slate-500 mt-1 leading-relaxed">Envíale un resumen a tu terapeuta o persona de confianza.</p>
+                            </div>
+
+                            <!-- Vista previa del reporte -->
+                            <div class="bg-white border border-slate-200 rounded-2xl p-4 mb-4">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Vista previa</p>
+                                <pre id="export-preview" class="text-[11px] text-slate-700 whitespace-pre-wrap font-sans leading-relaxed"></pre>
+                            </div>
+
+                            <!-- Campo opcional para mensaje al terapeuta -->
+                            <div class="mb-4">
+                                <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Mensaje adicional (opcional)</label>
+                                <textarea id="export-extra-message" rows="2" placeholder="Ej: Esta semana me costó más dormir, pero logré 2 retos..." class="w-full bg-white border border-slate-200 focus:border-mint rounded-xl px-3 py-2 text-xs focus:outline-none transition resize-none"></textarea>
+                            </div>
+
+                            <!-- Botones de acción -->
+                            <div class="space-y-2">
+                                <button onclick="copyReport()" class="w-full bg-mint hover:bg-mint/80 text-navy font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                                    <i class="fa-solid fa-copy"></i> Copiar reporte
+                                </button>
+                                <button onclick="downloadReport()" class="w-full bg-navy hover:bg-navy/90 text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                                    <i class="fa-solid fa-download"></i> Descargar como archivo
+                                </button>
+                                <button onclick="shareWhatsApp()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                                    <i class="fa-brands fa-whatsapp text-base"></i> Enviar por WhatsApp
+                                </button>
+                            </div>
+
+                            <p class="text-[10px] text-slate-400 text-center mt-3 italic">
+                                🔒 Tu reporte se genera en tu dispositivo. Tú decides con quién compartirlo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Toast de confirmación -->
+                    <div id="toast" class="hidden absolute top-12 left-1/2 transform -translate-x-1/2 z-50 bg-navy text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg animate-pop">
+                        <i class="fa-solid fa-check mr-1"></i> <span id="toast-text">Copiado al portapapeles</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            activeTab: 'inicio',
+            username: 'Usuari@',
+            selectedMood: null, 
+            completedDays: [false, false, false, false, false, false, false], 
+            challenges: [
+                { id: 0, title: 'Mirar por la ventana', level: 1, completed: false },
+                { id: 1, title: 'Caminar a la esquina', level: 2, completed: false }
+            ],
+            trophiesUnlocked: false,
+            breatheState: 'idle', 
+            breatheInterval: null,
+            moodHistory: [] // NUEVO: Array de {mood, timestamp}
+        };
+
+        const moodPhrases = {
+            feliz: "¡Qué gran momento! Saborea esta paz, guárdala en tu memoria y recuerda que eres capaz. 😊",
+            neutral: "Un día tranquilo y sin prisa también es un gran día. Ve a tu propio ritmo. 😐",
+            ansioso: "Inhala suavemente. Esta tormenta es solo una emoción en tu cuerpo, y va a pasar. 😰",
+            crisis: "Estás a salvo aquí en tu app. Si lo necesitas, tu botón SOS está listo para ayudarte. 🌀"
+        };
+
+        const moodModalContent = {
+            feliz: {
+                emoji: "😊", title: "¡Qué energía tan bonita!",
+                subtitle: "Los días buenos son el mejor momento para avanzar un pasito más. Te proponemos:",
+                actions: [
+                    { icon: "fa-trophy", iconBg: "bg-mint", iconColor: "text-mintDark", title: "Aprovecha tu impulso y haz un reto", desc: "Ir a la pestaña Retos para completar una nueva meta hoy.", cta: "Ir a Retos ahora", ctaBg: "bg-mint hover:bg-mint/80 text-navy", action: () => { switchTab('retos'); closeMoodModal(); } },
+                    { icon: "fa-comment-dots", iconBg: "bg-sky-100", iconColor: "text-sky-700", title: "Cuéntale a la IA tu victoria", desc: "Registrar tu logro activa tu rayito de constancia semanal.", cta: "Contar mi logro", ctaBg: "bg-navy hover:bg-navy/90 text-white", action: () => { switchTab('asistente'); closeMoodModal(); fillChat('Hoy me siento muy bien y quiero aprovechar para avanzar en un reto.'); } },
+                    { icon: "fa-book-heart", iconBg: "bg-amber-100", iconColor: "text-amber-700", title: "Guarda este momento en tu memoria", desc: "Escribe una nota rápida de lo que te hace sentir bien hoy.", cta: "Anotar en la IA", ctaBg: "bg-white border border-slate-200 text-navy hover:bg-slate-50", action: () => { switchTab('asistente'); closeMoodModal(); fillChat('Hoy me siento bien porque...'); } }
+                ]
+            },
+            neutral: {
+                emoji: "😐", title: "Un día tranquilo también vale",
+                subtitle: "La calma es terreno fértil para aprender. Te recomendamos:",
+                actions: [
+                    { icon: "fa-book-open", iconBg: "bg-sky-100", iconColor: "text-sky-700", title: "Aprende algo nuevo sobre tu proceso", desc: "Ver un video corto o leer un mito desmentido toma 2 minutos.", cta: "Ir a Aprende", ctaBg: "bg-mint hover:bg-mint/80 text-navy", action: () => { switchTab('aprende'); closeMoodModal(); } },
+                    { icon: "fa-seedling", iconBg: "bg-mint/30", iconColor: "text-mintDark", title: "Sembrar un reto pequeñito", desc: "Los días neutros son perfectos para retos suaves, como mirar por la ventana.", cta: "Ver retos suaves", ctaBg: "bg-navy hover:bg-navy/90 text-white", action: () => { switchTab('retos'); closeMoodModal(); } },
+                    { icon: "fa-mug-hot", iconBg: "bg-amber-100", iconColor: "text-amber-700", title: "Solo respira un momento", desc: "Un ejercicio corto de calma para acompañar tu día tranquilo.", cta: "Respirar 1 minuto", ctaBg: "bg-white border border-slate-200 text-navy hover:bg-slate-50", action: () => { switchTab('sos'); closeMoodModal(); } }
+                ]
+            },
+            ansioso: {
+                emoji: "😰", title: "Te sentimos, y estás a salvo",
+                subtitle: "La ansiedad miente. Vamos a recordarle a tu cuerpo la verdad, pasito a pasito:",
+                actions: [
+                    { icon: "fa-wind", iconBg: "bg-salmon/20", iconColor: "text-salmon", title: "Respira guiado con nosotros", desc: "El ejercicio de calma baja la alerta de tu cuerpo en menos de 2 minutos.", cta: "Ir a Calma ahora", ctaBg: "bg-salmon hover:bg-salmon/90 text-white animate-soft-pulse", action: () => { switchTab('sos'); closeMoodModal(); setTimeout(startBreathing, 400); } },
+                    { icon: "fa-shield-halved", iconBg: "bg-amber-100", iconColor: "text-amber-700", title: "Rompe un mito que te asusta", desc: "Leer la realidad detrás del miedo ayuda a desactivarlo.", cta: "Leer ahora", ctaBg: "bg-navy hover:bg-navy/90 text-white", action: () => { switchTab('aprende'); closeMoodModal(); setTimeout(toggleMyths, 300); } },
+                    { icon: "fa-hand-holding-heart", iconBg: "bg-mint/30", iconColor: "text-mintDark", title: "Habla con la IA empática", desc: "Escríbenos lo que sientes. Te escuchamos sin juzgar.", cta: "Desahogarme aquí", ctaBg: "bg-white border border-slate-200 text-navy hover:bg-slate-50", action: () => { switchTab('asistente'); closeMoodModal(); fillChat('Hoy me siento ansioso/a y necesito apoyo.'); } }
+                ]
+            },
+            crisis: {
+                emoji: "🌀", title: "Estamos contigo. Respira.",
+                subtitle: "Esto es una ola: va a subir, pero también va a bajar. Sigue estos pasos en orden:",
+                actions: [
+                    { icon: "fa-kit-medical", iconBg: "bg-red-100", iconColor: "text-red-600", title: "PASO 1: Activa el SOS de calma", desc: "Es lo más importante ahora. Respira con el círculo salmón 2 minutos.", cta: "Activar SOS ahora", ctaBg: "bg-salmon hover:bg-salmon/90 text-white animate-soft-pulse", action: () => { switchTab('sos'); closeMoodModal(); setTimeout(startBreathing, 400); } },
+                    { icon: "fa-user-doctor", iconBg: "bg-navy/10", iconColor: "text-navy", title: "PASO 2: Contacta a tu especialista", desc: "Si la ola no baja, habla con un profesional de confianza ahora mismo.", cta: "Ver especialistas", ctaBg: "bg-navy hover:bg-navy/90 text-white", action: () => { switchTab('especialistas'); closeMoodModal(); } },
+                    { icon: "fa-phone-volume", iconBg: "bg-red-100", iconColor: "text-red-600", title: "Línea de contención emocional", desc: "Si sientes que no puedes más, llama a una línea de ayuda 24/7.", cta: "Llamar ahora", ctaBg: "bg-red-500 hover:bg-red-600 text-white", action: () => { window.open('tel:113', '_blank'); } }
+                ]
+            }
+        };
+
+        // --- UTILIDADES ---
+        function showCloudStatus(text, type = 'info') {
+            const statusEl = document.getElementById('cloud-status');
+            if (!statusEl) return;
+            if (type === 'error') {
+                statusEl.className = "font-semibold text-red-600 animate-pulse";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> ${text}`;
+            } else if (text.includes('guardado')) {
+                statusEl.className = "font-semibold text-green-600 animate-pop";
+                statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-1"></i> ${text}`;
+            } else {
+                statusEl.className = "font-semibold text-amber-600";
+                statusEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> ${text}`;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2200);
+        }
+
+        // --- NUEVO: HISTORIAL DE ÁNIMOS ---
+        function getWeekStart() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Ajustar para que la semana inicie en lunes
+            const start = new Date(now.setDate(diff));
+            start.setHours(0, 0, 0, 0);
+            return start.getTime();
+        }
+
+        function recordMood(mood) {
+            const now = Date.now();
+            const weekStart = getWeekStart();
+            
+            // Limpiar registros de semanas anteriores
+            state.moodHistory = state.moodHistory.filter(entry => entry.timestamp >= weekStart);
+            
+            // Registrar el nuevo ánimo
+            state.moodHistory.push({ mood: mood, timestamp: now });
+            
+            updateMoodHistoryUI();
+        }
+
+        function updateMoodHistoryUI() {
+            const weekStart = getWeekStart();
+            const weekEntries = state.moodHistory.filter(e => e.timestamp >= weekStart);
+            
+            const counts = { feliz: 0, neutral: 0, ansioso: 0, crisis: 0 };
+            weekEntries.forEach(e => { counts[e.mood] = (counts[e.mood] || 0) + 1; });
+            
+            const total = weekEntries.length;
+            const emptyEl = document.getElementById('mood-history-empty');
+            const contentEl = document.getElementById('mood-history-content');
+            const summaryEl = document.getElementById('mood-history-summary');
+
+            if (total === 0) {
+                emptyEl.classList.remove('hidden');
+                contentEl.classList.add('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            contentEl.classList.remove('hidden');
+
+            // Actualizar barras
+            ['feliz', 'neutral', 'ansioso', 'crisis'].forEach(mood => {
+                const bar = document.getElementById(`mood-bar-${mood}`);
+                const count = document.getElementById(`mood-count-${mood}`);
+                const pct = total > 0 ? (counts[mood] / total) * 100 : 0;
+                bar.style.width = pct + '%';
+                count.innerText = counts[mood];
+            });
+
+            // Resumen textual
+            const parts = [];
+            if (counts.feliz > 0) parts.push(`😊 ${counts.feliz}`);
+            if (counts.neutral > 0) parts.push(`😐 ${counts.neutral}`);
+            if (counts.ansioso > 0) parts.push(`😰 ${counts.ansioso}`);
+            if (counts.crisis > 0) parts.push(`🌀 ${counts.crisis}`);
+            
+            let dominant = 'feliz';
+            let maxCount = 0;
+            Object.keys(counts).forEach(m => { if (counts[m] > maxCount) { maxCount = counts[m]; dominant = m; } });
+            
+            const dominantLabels = {
+                feliz: "¡Has tenido más días buenos que difíciles! Eso es una gran señal. 🌱",
+                neutral: "Tu semana ha sido equilibrada. La calma también es progreso. 🍃",
+                ansioso: "Has tenido días difíciles, pero cada registro es un paso para conocerte mejor. 💛",
+                crisis: "Has pasado por momentos muy duros. Recuerda: pedir ayuda también es valentía. 🤍"
+            };
+            
+            summaryEl.innerText = `Esta semana: ${parts.join(' · ')} — ${dominantLabels[dominant]}`;
+        }
+
+        function resetMoodHistory() {
+            if (!confirm('¿Seguro que quieres reiniciar tu historial de ánimos de esta semana?')) return;
+            state.moodHistory = [];
+            updateMoodHistoryUI();
+            saveProgress();
+            showToast('Historial reiniciado');
+        }
+
+        // --- NUEVO: EXPORTAR PROGRESO ---
+        function generateReportText() {
+            const extra = document.getElementById('export-extra-message').value.trim();
+            const now = new Date();
+            const weekStart = getWeekStart();
+            const weekEntries = state.moodHistory.filter(e => e.timestamp >= weekStart);
+            
+            const counts = { feliz: 0, neutral: 0, ansioso: 0, crisis: 0 };
+            weekEntries.forEach(e => { counts[e.mood] = (counts[e.mood] || 0) + 1; });
+            
+            const daysCount = state.completedDays.filter(Boolean).length;
+            const challengesDone = state.challenges.filter(c => c.completed).length;
+            const trophyStatus = state.trophiesUnlocked ? '¡Desbloqueado! 🏆' : 'Aún bloqueado';
+            
+            const weekStartDate = new Date(weekStart);
+            const dateStr = weekStartDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+            
+            let report = `🌿 REPORTE AGGFREE - Semana del ${dateStr}\n`;
+            report += `━━━━━━━━━━━━━━━━━━━━\n`;
+            report += `👤 Usuario: ${state.username}\n`;
+            report += `📅 Fecha: ${now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}\n\n`;
+            
+            report += `📊 RESUMEN DE PROGRESO\n`;
+            report += `• Constancia semanal: ${daysCount} de 7 días ${daysCount >= 5 ? '🔥' : ''}\n`;
+            report += `• Retos completados: ${challengesDone} de ${state.challenges.length}\n`;
+            report += `• Trofeo: ${trophyStatus}\n\n`;
+            
+            report += `💚 SEMANA EMOCIONAL\n`;
+            report += `• 😊 Feliz: ${counts.feliz} registro(s)\n`;
+            report += `• 😐 Neutral: ${counts.neutral} registro(s)\n`;
+            report += `• 😰 Ansioso: ${counts.ansioso} registro(s)\n`;
+            report += `• 🌀 Crisis: ${counts.crisis} registro(s)\n`;
+            report += `• Total de registros: ${weekEntries.length}\n\n`;
+            
+            report += `🏆 DETALLE DE RETOS\n`;
+            state.challenges.forEach(c => {
+                report += `• [${c.completed ? '✓' : ' '}] Nivel ${c.level}: ${c.title}\n`;
+            });
+            report += `\n`;
+            
+            if (extra) {
+                report += `💬 MENSAJE ADICIONAL\n`;
+                report += `"${extra}"\n\n`;
+            }
+            
+            report += `━━━━━━━━━━━━━━━━━━━━\n`;
+            report += `Generado por AGGFREE - App de apoyo emocional`;
+            
+            return report;
+        }
+
+        function openExportModal() {
+            document.getElementById('export-preview').innerText = generateReportText();
+            document.getElementById('export-modal').classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.add('hidden');
+        }
+
+        function copyReport() {
+            const text = generateReportText();
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('¡Reporte copiado! Pégalo donde quieras');
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('¡Reporte copiado!');
+            });
+        }
+
+        function downloadReport() {
+            const text = generateReportText();
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `Reporte_AGGFREE_${state.username.replace(/\s/g, '_')}_${dateStr}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Archivo descargado');
+        }
+
+        function shareWhatsApp() {
+            const text = generateReportText();
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
+        }
+
+        // --- GUARDADO ---
+        function loadProgress() {
+            showCloudStatus("Cargando progreso... ⏳");
+            try {
+                const savedData = localStorage.getItem('aggfree_progress_v3');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    if (data.username) {
+                        state.username = data.username;
+                        document.getElementById('username-input').value = data.username;
+                    }
+                    if (data.completedDays) state.completedDays = data.completedDays;
+                    if (data.challenges) state.challenges = data.challenges;
+                    if (data.moodHistory) state.moodHistory = data.moodHistory;
+                    if (data.selectedMood) {
+                        state.selectedMood = data.selectedMood;
+                        selectMood(data.selectedMood, false, false);
+                    }
+                    if (data.chatHistory) {
+                        document.getElementById('chat-messages').innerHTML = data.chatHistory;
+                    }
+                    updateUI();
+                    updateMoodHistoryUI();
+                    showCloudStatus("¡Progreso restaurado! ☁️✅");
+                    handleUsernameChange(false);
+                } else {
+                    showCloudStatus("¡Listo para empezar! ☁️✅");
+                }
+            } catch (e) {
+                console.error("Error al cargar localStorage", e);
+                showCloudStatus("Error al cargar localmente", "error");
+            }
+        }
+
+        function saveProgress() {
+            showCloudStatus("Guardando cambios... ⏳");
+            try {
+                const dataToSave = {
+                    username: state.username,
+                    completedDays: state.completedDays,
+                    challenges: state.challenges,
+                    selectedMood: state.selectedMood,
+                    moodHistory: state.moodHistory,
+                    chatHistory: document.getElementById('chat-messages').innerHTML,
+                    updatedAt: new Date().toISOString()
+                };
+                localStorage.setItem('aggfree_progress_v3', JSON.stringify(dataToSave));
+                setTimeout(() => {
+                    showCloudStatus("¡Progreso guardado automáticamente! ☁️✅");
+                }, 400);
+            } catch (e) {
+                console.error("Error al guardar localStorage", e);
+                showCloudStatus("Error al guardar localmente", "error");
+            }
+        }
+
+        window.onload = function() {
+            switchTab('inicio');
+            selectMood('feliz', false, false); 
+            loadProgress();
+        }
+
+        function openVideo() { window.open('https://www.youtube.com/watch?v=-MxD84KbUMM', '_blank'); }
+        function toggleMyths() {
+            const panel = document.getElementById('myths-panel');
+            const arrow = document.getElementById('myth-arrow');
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                arrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+            } else {
+                panel.classList.add('hidden');
+                arrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            }
+        }
+        function openGuide() {
+            window.open('https://fundipp.org/wp-content/uploads/2015/09/MANUAL-DE-AGORAFOBIA.pdf', '_blank');
+        }
+
+        function showMoodModal(mood) {
+            const content = moodModalContent[mood];
+            if (!content) return;
+            document.getElementById('mood-modal-emoji').innerText = content.emoji;
+            document.getElementById('mood-modal-title').innerText = content.title;
+            document.getElementById('mood-modal-subtitle').innerText = content.subtitle;
+            const actionsContainer = document.getElementById('mood-modal-actions');
+            actionsContainer.innerHTML = '';
+            content.actions.forEach((action, idx) => {
+                const card = document.createElement('button');
+                card.className = "w-full bg-white border border-slate-100 hover:border-mint hover:shadow-md p-3 rounded-2xl text-left transition-all duration-200 flex items-start gap-3 group animate-pop";
+                card.style.animationDelay = (idx * 80) + 'ms';
+                card.style.opacity = '0';
+                card.style.animationFillMode = 'forwards';
+                card.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl ${action.iconBg} ${action.iconColor} flex items-center justify-center text-base shrink-0 transition-transform group-hover:scale-110">
+                        <i class="fa-solid ${action.icon}"></i>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <h4 class="font-bold text-sm text-navy leading-tight">${action.title}</h4>
+                        <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${action.desc}</p>
+                        <span class="inline-block mt-2 ${action.ctaBg} text-[11px] font-bold px-3 py-1.5 rounded-full transition">
+                            ${action.cta} <i class="fa-solid fa-arrow-right ml-1 text-[9px]"></i>
+                        </span>
+                    </div>
+                `;
+                card.addEventListener('click', action.action);
+                actionsContainer.appendChild(card);
+            });
+            const modal = document.getElementById('mood-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('animate-fade-in');
+        }
+
+        function closeMoodModal() {
+            const modal = document.getElementById('mood-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('animate-fade-in');
+        }
+
+        function selectMood(mood, save = true, showModal = true) {
+            state.selectedMood = mood;
+            document.getElementById('dynamic-mood-phrase').innerText = `"${moodPhrases[mood]}"`;
+            const moods = ['feliz', 'neutral', 'ansioso', 'crisis'];
+            moods.forEach(m => {
+                const btn = document.getElementById(`mood-btn-${m}`);
+                if (!btn) return;
+                if (m === mood) {
+                    btn.classList.remove('bg-slate-50', 'border-slate-200');
+                    if (m === 'crisis') {
+                        btn.className = "w-12 h-12 rounded-full bg-salmon text-white border-2 border-salmon flex items-center justify-center text-2xl transition duration-200 shadow-md animate-pop focus:outline-none";
+                    } else {
+                        btn.className = "w-12 h-12 rounded-full bg-mint text-navy border-2 border-mint flex items-center justify-center text-2xl transition duration-200 shadow-md animate-pop focus:outline-none";
+                    }
+                } else {
+                    btn.className = "w-12 h-12 rounded-full bg-slate-50 hover:bg-mint/10 border border-slate-200 hover:border-mint flex items-center justify-center text-2xl transition duration-200 focus:outline-none";
+                }
+            });
+
+            // NUEVO: Registrar en el historial y mostrar modal
+            recordMood(mood);
+            if (showModal) showMoodModal(mood);
+            if (save) saveProgress();
+        }
+
+        function handleUsernameChange(save = true) {
+            const inputVal = document.getElementById('username-input').value.trim();
+            state.username = inputVal || 'Usuari@';
+            const welcomeMsg = document.getElementById('welcome-message-chat');
+            if (welcomeMsg) {
+                welcomeMsg.innerText = `¡Hola ${state.username}! Estoy aquí para escucharte y registrar tus progresos de hoy en el calendario. Cuéntame, ¿qué reto lograste superar? 😊`;
+            }
+            if (save) saveProgress();
+        }
+
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            const tabs = ['inicio', 'aprende', 'retos', 'especialistas', 'sos', 'asistente'];
+            tabs.forEach(tab => {
+                const el = document.getElementById(`tab-content-${tab}`);
+                if (el) el.classList.add('hidden');
+            });
+            document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+            tabs.forEach(btn => {
+                const el = document.getElementById(`nav-${btn}`);
+                if (el) {
+                    if (btn === tabId) {
+                        el.classList.remove('text-slate-400');
+                        el.classList.add('text-navy', 'font-bold');
+                    } else {
+                        el.classList.remove('text-navy', 'font-bold');
+                        el.classList.add('text-slate-400');
+                    }
+                }
+            });
+            if (tabId === 'asistente') {
+                const box = document.getElementById('chat-messages');
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
+        function updateUI() {
+            const daysCount = state.completedDays.filter(Boolean).length;
+            document.getElementById('weekly-days-count').innerText = `${daysCount} / 7 Días`;
+            for (let i = 0; i < 7; i++) {
+                const pill = document.getElementById(`day-pill-${i}`);
+                const ray = document.getElementById(`day-ray-${i}`);
+                if (state.completedDays[i]) {
+                    pill.className = "w-[30px] h-[45px] rounded-full bg-mint flex items-center justify-center cursor-pointer transition-all border border-slate-100 shadow-sm animate-pop";
+                    ray.className = "fa-solid fa-bolt text-mintDark text-[10px]";
+                } else {
+                    pill.className = "w-[30px] h-[45px] rounded-full bg-slate-200 flex items-center justify-center cursor-pointer transition-all border border-slate-100";
+                    ray.className = "fa-solid fa-bolt text-slate-400 text-[10px]";
+                }
+            }
+            state.challenges.forEach(challenge => {
+                const statusEl = document.getElementById(`challenge-status-${challenge.id}`);
+                const barEl = document.getElementById(`challenge-bar-${challenge.id}`);
+                if (challenge.completed) {
+                    statusEl.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Hecho`;
+                    statusEl.className = "text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full animate-pop";
+                    barEl.style.width = '100%';
+                } else {
+                    statusEl.innerText = 'Pendiente';
+                    statusEl.className = "text-xs font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full";
+                    barEl.style.width = '0%';
+                }
+            });
+            const trophyEl = document.getElementById('figma-trophy');
+            const statusIconEl = document.getElementById('figma-status-icon');
+            const sideStatusText = document.getElementById('status-trophy-text');
+            if (daysCount >= 1) {
+                trophyEl.classList.remove('grayscale');
+                trophyEl.classList.add('animate-float');
+                statusIconEl.innerText = "✅";
+                sideStatusText.innerHTML = "¡Desbloqueado! 🏆";
+                if (!state.trophiesUnlocked) {
+                    state.trophiesUnlocked = true;
+                    createCelebration();
+                }
+            } else {
+                trophyEl.classList.add('grayscale');
+                trophyEl.classList.remove('animate-float');
+                statusIconEl.innerText = "❌";
+                sideStatusText.innerText = "Bloqueado ❌";
+                state.trophiesUnlocked = false;
+            }
+        }
+
+        function toggleDayDirectly(index) {
+            state.completedDays[index] = !state.completedDays[index];
+            updateUI();
+            saveProgress();
+        }
+
+        function fillChat(text) {
+            switchTab('asistente');
+            document.getElementById('chat-input').value = text;
+            document.getElementById('chat-input').focus();
+        }
+
+        function startBreathing() {
+            if (state.breatheInterval) {
+                clearInterval(state.breatheInterval);
+                state.breatheInterval = null;
+                document.getElementById('breathe-circle').classList.remove('breathing-active');
+                document.getElementById('breathe-action').innerText = "Calmarme";
+                document.getElementById('breathe-timer').innerText = "Presionar";
+                document.getElementById('breathe-instruction').innerText = "Inhala y exhala despacio. Todo está bien.";
+                document.getElementById('breathe-wave').style.transform = 'scale(1)';
+                return;
+            }
+            let stage = 0; 
+            let countdown = 4;
+            document.getElementById('breathe-circle').classList.add('breathing-active');
+            const steps = [
+                { text: "Inhala", desc: "Llena de aire tus pulmones lentamente...", scale: 'scale(1.25)', bg: '#8FA89B' },
+                { text: "Retén", desc: "Mantén el aire y siente el latido de tu corazón...", scale: 'scale(1.25)', bg: '#8FA89B' },
+                { text: "Exhala", desc: "Suelta el aire suavemente por la boca...", scale: 'scale(1)', bg: '#E08974' }
+            ];
+            const runStep = () => {
+                const current = steps[stage];
+                document.getElementById('breathe-action').innerText = current.text;
+                document.getElementById('breathe-instruction').innerText = current.desc;
+                document.getElementById('breathe-wave').style.transform = current.scale;
+                document.getElementById('breathe-wave').style.backgroundColor = current.bg;
+                state.breatheInterval = setInterval(() => {
+                    countdown--;
+                    document.getElementById('breathe-timer').innerText = `${countdown}s`;
+                    if (countdown <= 0) {
+                        clearInterval(state.breatheInterval);
+                        stage = (stage + 1) % 3;
+                        countdown = 4;
+                        runStep();
+                    }
+                }, 1000);
+            };
+            runStep();
+        }
+
+        function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+            addChatMessage(messageText, true);
+            input.value = '';
+            const loader = document.getElementById('chat-loading');
+            loader.classList.remove('hidden');
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                let reply = "";
+                const jsDay = new Date().getDay();
+                const dayIndex = jsDay === 0 ? 6 : jsDay - 1;
+                const dayNames = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+                const todayName = dayNames[dayIndex];
+                let challengeId = -1;
+                const textLower = messageText.toLowerCase();
+                if (textLower.includes('ventana') || textLower.includes('puerta') || textLower.includes('casa') || textLower.includes('mirar')) {
+                    reply = `¡Maravilloso paso, ${state.username}! Mirar afuera es un logro increíble para entrenar tu calma. He marcado tu rayito del ${todayName} en el calendario de la pestaña Retos y completado tu reto de Nivel 1. ¡Sigue así! 🏠🌿`;
+                    challengeId = 0; 
+                } else if (textLower.includes('esquina') || textLower.includes('caminar') || textLower.includes('calle')) {
+                    reply = `¡Qué valiente eres, ${state.username}! Llegar a la esquina es un reto de nivel medio superado con éxito. Acabo de activar tu rayito del ${todayName} en tu pestaña Retos. ¡Excelente! 🚶⚡`;
+                    challengeId = 1; 
+                } else if (textLower.includes('tienda') || textLower.includes('comprar') || textLower.includes('agua')) {
+                    reply = `¡Impresionante victoria, ${state.username}! Salir a un local comercial requiere mucha fuerza. He guardado tu racha con un rayito del ${todayName} en tu pestaña Retos. ¡Estoy muy orgulloso de ti! 🏪✨`;
+                } else {
+                    reply = `¡Me da muchísima alegría escuchar eso, ${state.username}! Cada pequeño esfuerzo cuenta para enseñarle a tu mente que estás a salvo. He marcado el día de hoy (${todayName}) con un rayito en tu calendario de constancia. ¡Sigue brillando! ⚡🌿`;
+                }
+                if (dayIndex !== -1) state.completedDays[dayIndex] = true;
+                if (challengeId !== -1) state.challenges[challengeId].completed = true;
+                addChatMessage(reply, false);
+                updateUI();
+                saveProgress();
+            }, 1200);
+        }
+
+        function addChatMessage(text, isUser) {
+            const chatBox = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            if (isUser) {
+                messageDiv.className = "flex items-start gap-2 max-w-[85%] self-end flex-row-reverse animate-pop";
+                messageDiv.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-navy text-white flex items-center justify-center text-[10px] shrink-0 font-bold">U</div>
+                    <div class="bg-mint text-navy p-2.5 rounded-2xl rounded-tl-none text-xs leading-relaxed shadow-sm">${text}</div>
+                `;
+            } else {
+                messageDiv.className = "flex items-start gap-2 max-w-[85%] self-start animate-pop";
+                messageDiv.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-mint/20 text-mintDark flex items-center justify-center text-xs shrink-0 font-bold">🌿</div>
+                    <div class="bg-slate-100 p-2.5 rounded-2xl rounded-tl-none text-xs text-slate-700 leading-relaxed shadow-sm">${text}</div>
+                `;
+            }
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function createCelebration() {
+            const duration = 2000;
+            const end = Date.now() + duration;
+            const interval = setInterval(() => {
+                if (Date.now() > end) return clearInterval(interval);
+                const confeti = document.createElement('div');
+                confeti.className = 'absolute w-2 h-2 rounded-full pointer-events-none z-50';
+                confeti.style.left = Math.random() * 100 + '%';
+                confeti.style.top = '-10px';
+                confeti.style.backgroundColor = ['#5EE3A6', '#E08974', '#F3C63F', '#4A90E2'][Math.floor(Math.random() * 4)];
+                confeti.style.transform = `scale(${Math.random()})`;
+                document.getElementById('phone-screen').appendChild(confeti);
+                let y = -10;
+                let x = parseFloat(confeti.style.left);
+                const drift = (Math.random() - 0.5) * 2;
+                const fall = setInterval(() => {
+                    y += 4;
+                    x += drift;
+                    confeti.style.top = y + 'px';
+                    confeti.style.left = x + '%';
+                    if (y > 700) {
+                        confeti.remove();
+                        clearInterval(fall);
+                    }
+                }, 16);
+            }, 50);
+        }
+
+        window.selectMood = selectMood;
+        window.switchTab = switchTab;
+        window.toggleDayDirectly = toggleDayDirectly;
+        window.startBreathing = startBreathing;
+        window.sendMessage = sendMessage;
+        window.handleUsernameChange = handleUsernameChange;
+        window.fillChat = fillChat;
+        window.openVideo = openVideo;
+        window.toggleMyths = toggleMyths;
+        window.openGuide = openGuide;
+        window.closeMoodModal = closeMoodModal;
+        window.openExportModal = openExportModal;
+        window.closeExportModal = closeExportModal;
+        window.copyReport = copyReport;
+        window.downloadReport = downloadReport;
+        window.shareWhatsApp = shareWhatsApp;
+        window.resetMoodHistory = resetMoodHistory;
+    </script>
+</body>
+</html>
